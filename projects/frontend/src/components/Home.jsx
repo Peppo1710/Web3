@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import * as bip39 from 'bip39';
 import { generateEthereumWallet } from '../utils/eth';
-// import { generateSolanaWallet } from '../utils/solana';
+import { generateSolanaWallet } from '../utils/sol';
 // import { generateBitcoinWallet } from '../utils/bitcoin';
 
 const Home = () => {
@@ -9,6 +9,7 @@ const Home = () => {
   const [wallets, setWallets] = useState([]);
   const [selectedWallet, setSelectedWallet] = useState('');
   const [ethIndex, setEthIndex] = useState(0);
+  const [solIndex , setSolIndex] = useState(0);
 
 
   const walletsList = [
@@ -35,7 +36,7 @@ const Home = () => {
       if (flag === 'Ethereum') {
         wallet = await generateEthereumWallet(mnemonic,ethIndex,setEthIndex);
       } else if (flag === 'Solana') {
-        wallet = await generateSolanaWallet(mnemonic); // TODO: implement this
+        wallet = await generateSolanaWallet(mnemonic, solIndex, setSolIndex); // TODO: implement this
       } else if (flag === 'Bitcoin') {
         wallet = await generateBitcoinWallet(mnemonic); // TODO: implement this
       }
