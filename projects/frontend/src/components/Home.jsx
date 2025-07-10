@@ -11,11 +11,9 @@ const Home = () => {
   const [ethIndex, setEthIndex] = useState(0);
   const [solIndex , setSolIndex] = useState(0);
 
-
   const walletsList = [
     { name: 'Solana', key: 'Solana' },
     { name: 'Ethereum', key: 'Ethereum' },
-    { name: 'Bitcoin', key: 'Bitcoin' },
   ];
 
   const generateMnemonic = () => {
@@ -37,8 +35,6 @@ const Home = () => {
         wallet = await generateEthereumWallet(mnemonic,ethIndex,setEthIndex);
       } else if (flag === 'Solana') {
         wallet = await generateSolanaWallet(mnemonic, solIndex, setSolIndex); // TODO: implement this
-      } else if (flag === 'Bitcoin') {
-        wallet = await generateBitcoinWallet(mnemonic); // TODO: implement this
       }
 
       if (wallet) {
@@ -51,88 +47,84 @@ const Home = () => {
   };
 
   return (
-    <div className="p-6">
-      <h1>🔐 HD Wallet Generator</h1>
-      <p>Generate wallets from a single seed phrase</p>
-
-      {/* Mnemonic Area */}
-      <textarea
-        value={mnemonic}
-        readOnly
-        rows={2}
-        style={{ width: '100%', marginTop: 10, marginBottom: 10 }}
-        placeholder="Mnemonic will appear here"
-      />
-      <button onClick={generateMnemonic} style={{ marginBottom: '20px' }}>
-        Generate 12-word Phrase
-      </button>
-
-      {/* Wallet Type Grid */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '16px',
-          marginTop: '24px',
-        }}
-      >
-        {walletsList.map((wallet) => (
-          <div
-            key={wallet.key}
-            style={{
-              border: selectedWallet === wallet.key ? '2px solid #007bff' : '1px solid #ccc',
-              borderRadius: '8px',
-              padding: '16px',
-              textAlign: 'center',
-            }}
-          >
-            <h2>{wallet.name}</h2>
-            <button
-              onClick={() => {
-                setSelectedWallet(wallet.key);
-                handleGenerateWallet(wallet.key);
-              }}
-            >
-              Add {wallet.name} Wallet
-            </button>
-          </div>
-        ))}
+    <div className="container">
+      {/* Header */}
+      <div className="header">
+        <h1>🔐 HD Wallet Generator</h1>
+        <p>Generate wallets from a single seed phrase</p>
       </div>
 
-      {/* Selected Wallet Info */}
-      {selectedWallet && (
-        <div style={{ marginTop: '20px' }}>
-          <strong>✅ Latest Selected Wallet Type:</strong> {selectedWallet}
-        </div>
-      )}
-
-      {/* Wallet Cards */}
-      <h2 style={{ marginTop: '40px' }}>📦 Generated Wallets</h2>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-          gap: '20px',
-          marginTop: '20px',
-        }}
-      >
-        {wallets.map((w, idx) => (
-          <div
-            key={idx}
-            style={{
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              padding: '16px',
-              backgroundColor: '#f9f9f9',
-              wordWrap: 'break-word',
-            }}
-          >
-            <h3>{w.type} Wallet</h3>
-            <p><strong>Address:</strong><br /> {w.address}</p>
-            <p><strong>Public Key:</strong><br /> {w.publicKey}</p>
-            <p><strong>Private Key:</strong><br /> {w.privateKey}</p>
+      <div className="main-content">
+        {/* Mnemonic Section */}
+        <div className="card mnemonic-section">
+          <div className="card-header">
+            <h2 className="card-title">Seed Phrase</h2>
           </div>
-        ))}
+          <textarea
+            value={mnemonic}
+            readOnly
+            className="mnemonic-textarea"
+            placeholder="Generate a 12-word mnemonic phrase to get started"
+          />
+          <button onClick={generateMnemonic} className="btn btn-primary">
+            Generate 12-word Phrase
+          </button>
+        </div>
+
+        {/* Wallet Type Grid */}
+        <div className="wallet-grid">
+          {walletsList.map((wallet) => (
+            <div
+              key={wallet.key}
+              className={`wallet-card ${selectedWallet === wallet.key ? 'selected' : ''}`}
+            >
+              <h2>{wallet.name}</h2>
+              <button
+                onClick={() => {
+                  setSelectedWallet(wallet.key);
+                  handleGenerateWallet(wallet.key);
+                }}
+                className="btn btn-secondary"
+              >
+                Add {wallet.name} Wallet
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Selected Wallet Info */}
+        {selectedWallet && (
+          <div className="status-indicator">
+            <span className="icon">✅</span>
+            <strong>Latest Selected Wallet Type:</strong> {selectedWallet}
+          </div>
+        )}
+
+        {/* Wallet Display */}
+        {wallets.length > 0 && (
+          <div className="wallet-display">
+            <h2>📦 Generated Wallets</h2>
+            <div className="wallet-grid-display">
+              {wallets.map((w, idx) => (
+                <div key={idx} className="wallet-item fade-in">
+                  <h3>{w.type} Wallet</h3>
+                  <div className="wallet-detail">
+                    <strong>Address</strong>
+                    <p>{w.address}</p>
+                  </div>
+                  <div className="wallet-detail">
+                    <strong>Public Key</strong>
+                    <p>{w.publicKey}</p>
+                  </div>
+                  <div className="wallet-detail">
+                    <strong>Private Key</strong>
+                    <p>{w.privateKey}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
