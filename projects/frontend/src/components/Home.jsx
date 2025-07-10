@@ -6,10 +6,12 @@ import { generateEthereumWallet } from '../utils/eth';
 
 const Home = () => {
   const [mnemonic, setMnemonic] = useState('');
-  const [wallet, setWalletsData] = useState([]);
+  const [wallets, setWallets] = useState([]);
   const [selectedWallet, setSelectedWallet] = useState('');
+  const [ethIndex, setEthIndex] = useState(0);
 
-  const wallets = [
+
+  const walletsList = [
     { name: 'Solana', key: 'Solana' },
     { name: 'Ethereum', key: 'Ethereum' },
     { name: 'Bitcoin', key: 'Bitcoin' },
@@ -18,24 +20,32 @@ const Home = () => {
   const generateMnemonic = () => {
     const mnemo = bip39.generateMnemonic();
     setMnemonic(mnemo);
+    setWallets([]); // reset generated wallets on new phrase
   };
 
   const handleGenerateWallet = async (flag) => {
+    if (!mnemonic) {
+      alert("Please generate a mnemonic phrase first.");
+      return;
+    }
+
     try {
       let wallet;
+
       if (flag === 'Ethereum') {
-        wallet = await generateEthereumWallet(mnemonic);
+        wallet = await generateEthereumWallet(mnemonic,ethIndex,setEthIndex);
       } else if (flag === 'Solana') {
-        wallet = await generateSolanaWallet(mnemonic);
+        wallet = await generateSolanaWallet(mnemonic); // TODO: implement this
       } else if (flag === 'Bitcoin') {
-        wallet = await generateBitcoinWallet(mnemonic);
+        wallet = await generateBitcoinWallet(mnemonic); // TODO: implement this
       }
 
       if (wallet) {
-        setWalletsData((prev) => [...prev, { ...wallet, type: flag }]);
+        setWallets((prev) => [...prev, { ...wallet, type: flag }]);
       }
     } catch (error) {
       console.error('Wallet Generation Error:', error.message);
+      alert('Something went wrong: ' + error.message);
     }
   };
 
@@ -65,7 +75,7 @@ const Home = () => {
           marginTop: '24px',
         }}
       >
-        {wallets.map((wallet) => (
+        {walletsList.map((wallet) => (
           <div
             key={wallet.key}
             style={{
@@ -76,9 +86,6 @@ const Home = () => {
             }}
           >
             <h2>{wallet.name}</h2>
-            {/* <h2>{wallet.address}</h2>
-            <h2>{wallet.privateKey}</h2>
-            <h2>{wallet.publicKey}</h2> */}
             <button
               onClick={() => {
                 setSelectedWallet(wallet.key);
@@ -108,7 +115,7 @@ const Home = () => {
           marginTop: '20px',
         }}
       >
-        {wallet.map((w, idx) => (
+        {wallets.map((w, idx) => (
           <div
             key={idx}
             style={{
